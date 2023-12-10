@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Marvel Heroes</string>
+    <string name="created_by">Created By:</string>
+    <string name="team">Team:</string>
+    <string name="real_name">Real Name:</string>
+    <string name="publisher_name">Publisher Name:</string>
+</resources>
