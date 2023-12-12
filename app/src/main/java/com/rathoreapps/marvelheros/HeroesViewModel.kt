@@ -4,12 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.rathoreapps.marvelheros.dataModels.MarvelCharacter
-import com.rathoreapps.marvelheros.network.APIClient
-import com.rathoreapps.marvelheros.network.MarvelApiServices
 import com.rathoreapps.marvelheros.network.MarvelRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import javax.inject.Inject
 
 /**
  * Copyright (C) 2023 RathoreApps Inc.
@@ -21,11 +21,14 @@ import retrofit2.Response
  *
  * Description: View Model for Heroes list Activity
  */
-class HeroesViewModel: ViewModel() {
+
+@HiltViewModel
+class HeroesViewModel @Inject constructor() : ViewModel() {
     private val marvelCharacters = MutableLiveData<List<MarvelCharacter>>()
     private val apiErrorText = MutableLiveData<String>()
 
-    private var repository: MarvelRepository = MarvelRepository(APIClient.client.create(MarvelApiServices::class.java))
+    @Inject
+    lateinit var repository: MarvelRepository
 
     /**
      * This method return mutable list as Live Data

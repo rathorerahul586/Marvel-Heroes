@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rathoreapps.marvelheros.databinding.ActivityHeroesBinding
 import com.rathoreapps.marvelheros.utils.showHide
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Copyright (C) 2023 RathoreApps Inc.
@@ -17,6 +18,8 @@ import com.rathoreapps.marvelheros.utils.showHide
  *
  * Description: Marvel Character Activity.
  */
+
+@AndroidEntryPoint
 class HeroesActivity : AppCompatActivity() {
     private val mainViewModel: HeroesViewModel by viewModels()
     private var heroesListAdapter: HeroesListAdapter? = null

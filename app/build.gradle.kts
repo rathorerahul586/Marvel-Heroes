@@ -1,6 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id ("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -49,6 +51,7 @@ dependencies {
     val retrofitVersion = "2.9.0"
     val httpLoggingVersion = "5.0.0-alpha.2"
     val loggerVersion = "2.1.1"
+    val daggerHiltVersion = "2.49"
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -64,6 +67,10 @@ dependencies {
 
     /** Logger **/
     implementation("com.orhanobut:logger:$loggerVersion")
+
+    // Dagger Hilt for dependency injection
+    implementation ("com.google.dagger:hilt-android:$daggerHiltVersion")
+    kapt ("com.google.dagger:hilt-compiler:$daggerHiltVersion")
 
     // Load image from URL
     implementation("com.github.bumptech.glide:glide:4.15.1")
