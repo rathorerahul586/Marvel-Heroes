@@ -1,8 +1,7 @@
 package com.rathoreapps.marvelheros.network
 
 import com.rathoreapps.marvelheros.dataModels.MarvelCharacter
-import retrofit2.Call
-import retrofit2.Callback
+import javax.inject.Inject
 
 /**
  * Copyright (C) 2023 RathoreApps Inc.
@@ -14,10 +13,11 @@ import retrofit2.Callback
  *
  * Description: Repository to make api calls.
  */
-class MarvelRepository(private val apiService: MarvelApiServices) {
+class MarvelRepository @Inject internal constructor (private val apiService: MarvelApiServices) {
 
-    fun getMarvelCharacters(callback: Callback<List<MarvelCharacter>>) {
-        val call: Call<List<MarvelCharacter>> = apiService.getMarvelCharacters()
-        call.enqueue(callback)
+    suspend fun getMarvelCharacters(): ResponseOf<List<MarvelCharacter>?> {
+        return RetrofitResponse.makeApiCall {
+            apiService.getMarvelCharacters()
+        }
     }
 }

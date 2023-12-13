@@ -3,13 +3,16 @@ package com.rathoreapps.marvelheros
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.rathoreapps.marvelheros.dataModels.MarvelCharacter
-import com.rathoreapps.marvelheros.network.APIClient
-import com.rathoreapps.marvelheros.network.MarvelApiServices
 import com.rathoreapps.marvelheros.network.MarvelRepository
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.rathoreapps.marvelheros.network.handleRandomFailure
+import com.rathoreapps.marvelheros.network.handleServerFailure
+import com.rathoreapps.marvelheros.network.handleSuccess
+import com.rathoreapps.marvelheros.utils.getStringFromAppContext
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Copyright (C) 2023 RathoreApps Inc.
@@ -21,11 +24,14 @@ import retrofit2.Response
  *
  * Description: View Model for Heroes list Activity
  */
-class HeroesViewModel: ViewModel() {
+
+@HiltViewModel
+class HeroesViewModel @Inject constructor() : ViewModel() {
     private val marvelCharacters = MutableLiveData<List<MarvelCharacter>>()
     private val apiErrorText = MutableLiveData<String>()
 
-    private var repository: MarvelRepository = MarvelRepository(APIClient.client.create(MarvelApiServices::class.java))
+    @Inject
+    lateinit var repository: MarvelRepository
 
     /**
      * This method return mutable list as Live Data
@@ -47,18 +53,20 @@ class HeroesViewModel: ViewModel() {
      * Fetch marvel characters from server
      * */
     fun fetchMarvelCharacters() {
-        repository.getMarvelCharacters(object : Callback<List<MarvelCharacter>> {
-            override fun onResponse(call: Call<List<MarvelCharacter>>, response: Response<List<MarvelCharacter>>) {
-                if (response.isSuccessful) {
-                    marvelCharacters.value = response.body()
-                } else {
-                    apiErrorText.value = "Something went wrong"
+        viewModelScope.launch {
+            repository.getMarvelCharacters().let {
+                it.handleSuccess { allCharacters ->
+                    marvelCharacters.value = allCharacters
+                }
+                it.handleRandomFailure { errorMsg ->
+                    errorMsg?.let { errorResId ->
+                        apiErrorText.value = getStringFromAppContext(errorResId)
+                    }
+                }
+                it.handleServerFailure { errorMessage ->
+                    apiErrorText.value = errorMessage
                 }
             }
-
-            override fun onFailure(call: Call<List<MarvelCharacter>>, t: Throwable) {
-                apiErrorText.value = t.localizedMessage
-            }
-        })
+        }
     }
 }

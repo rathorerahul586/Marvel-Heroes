@@ -4,4 +4,7 @@
     <string name="team">Team:</string>
     <string name="real_name">Real Name:</string>
     <string name="publisher_name">Publisher Name:</string>
+    <string name="retry">Retry</string>
+    <string name="error_something_went_wrong">Something went wrong</string>
+    <string name="no_internet">No Internet Connection.</string>
 </resources>

@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rathoreapps.marvelheros.databinding.ActivityHeroesBinding
 import com.rathoreapps.marvelheros.utils.showHide
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Copyright (C) 2023 RathoreApps Inc.
@@ -17,6 +18,8 @@ import com.rathoreapps.marvelheros.utils.showHide
  *
  * Description: Marvel Character Activity.
  */
+
+@AndroidEntryPoint
 class HeroesActivity : AppCompatActivity() {
     private val mainViewModel: HeroesViewModel by viewModels()
     private var heroesListAdapter: HeroesListAdapter? = null
@@ -28,10 +31,10 @@ class HeroesActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initRecyclerView()
-        mainViewModel.fetchMarvelCharacters()
+        initRetryButton()
+        fetchApiData()
         observeMarvelCharacters()
         observeApiError()
-        showHideProgressBar(true, showError = false)
     }
 
     private fun initRecyclerView() {
@@ -40,6 +43,17 @@ class HeroesActivity : AppCompatActivity() {
 
         heroesListAdapter = HeroesListAdapter()
         binding.heroesListRv.adapter = heroesListAdapter
+    }
+
+    private fun initRetryButton() {
+        binding.retryButton.setOnClickListener {
+            fetchApiData()
+        }
+    }
+
+    private fun fetchApiData() {
+        showHideProgressBar(true, showError = false)
+        mainViewModel.fetchMarvelCharacters()
     }
 
     private fun observeMarvelCharacters() {
@@ -60,7 +74,7 @@ class HeroesActivity : AppCompatActivity() {
         with(binding) {
             progressBar.showHide(show)
             heroesListRv.showHide(!show && !showError)
-            errorText.showHide(!show && showError)
+            errorGroup.showHide(!show && showError)
         }
     }
 }
