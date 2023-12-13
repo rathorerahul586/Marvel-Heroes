@@ -1,7 +1,7 @@
 package com.rathoreapps.marvelheros.network
 
 import com.rathoreapps.marvelheros.dataModels.MarvelCharacter
-import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.GET
 
 /**
@@ -17,5 +17,5 @@ import retrofit2.http.GET
 
 interface MarvelApiServices {
     @GET(EndpointConstants.GET_MARVEL_CHARACTERS)
-    fun getMarvelCharacters(): Call<List<MarvelCharacter>>
+    suspend fun getMarvelCharacters(): Response<List<MarvelCharacter>>
 }

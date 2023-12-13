@@ -3,12 +3,15 @@ package com.rathoreapps.marvelheros
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.rathoreapps.marvelheros.dataModels.MarvelCharacter
 import com.rathoreapps.marvelheros.network.MarvelRepository
+import com.rathoreapps.marvelheros.network.handleRandomFailure
+import com.rathoreapps.marvelheros.network.handleServerFailure
+import com.rathoreapps.marvelheros.network.handleSuccess
+import com.rathoreapps.marvelheros.utils.getStringFromAppContext
 import dagger.hilt.android.lifecycle.HiltViewModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -50,18 +53,20 @@ class HeroesViewModel @Inject constructor() : ViewModel() {
      * Fetch marvel characters from server
      * */
     fun fetchMarvelCharacters() {
-        repository.getMarvelCharacters(object : Callback<List<MarvelCharacter>> {
-            override fun onResponse(call: Call<List<MarvelCharacter>>, response: Response<List<MarvelCharacter>>) {
-                if (response.isSuccessful) {
-                    marvelCharacters.value = response.body()
-                } else {
-                    apiErrorText.value = "Something went wrong"
+        viewModelScope.launch {
+            repository.getMarvelCharacters().let {
+                it.handleSuccess { allCharacters ->
+                    marvelCharacters.value = allCharacters
+                }
+                it.handleRandomFailure { errorMsg ->
+                    errorMsg?.let { errorResId ->
+                        apiErrorText.value = getStringFromAppContext(errorResId)
+                    }
+                }
+                it.handleServerFailure { errorMessage ->
+                    apiErrorText.value = errorMessage
                 }
             }
-
-            override fun onFailure(call: Call<List<MarvelCharacter>>, t: Throwable) {
-                apiErrorText.value = t.localizedMessage
-            }
-        })
+        }
     }
 }
